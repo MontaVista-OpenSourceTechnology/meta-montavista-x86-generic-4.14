@@ -16,6 +16,8 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 SRC_URI = "${MV_KERNEL_TREE};branch=${KBRANCH};name=machine"
 SRC_URI += "file://defconfig"
 
+DEPENDS += "elfutils-native"
+
 KCONF_BSP_AUDIT_LEVEL = "0"
 COMPATIBLE_MACHINE_x86-generic-64 = "x86-generic-64"
 COMPATIBLE_MACHINE_x86-generic = "x86-generic"
