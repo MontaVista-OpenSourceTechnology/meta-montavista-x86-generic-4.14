@@ -1,7 +1,7 @@
-MV_KERNEL_BRANCH ?= "v4.14"
-MV_KERNEL_TREE ?= "git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
+MV_KERNEL_BRANCH ?= "mvl-4.14/msd.cgx"
+MV_KERNEL_TREE ?= "git://github.com/MontaVista-OpenSourceTechnology/linux-mvista-2.4.git;protocol=https"
 MV_KERNELCACHE_BRANCH ?= "yocto-4.14"
-MV_KERNELCACHE_TREE ?= "git://git.yoctoproject.org/yocto-kernel-cache"
+MV_KERNELCACHE_TREE ?= "git://github.com/MontaVista-OpenSourceTechnology/yocto-kernel-cache;protocol=https"
 
 require recipes-kernel/linux/linux-yocto.inc
 
