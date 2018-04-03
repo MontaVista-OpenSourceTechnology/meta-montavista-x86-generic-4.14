@@ -3233,7 +3233,9 @@ CONFIG_HSU_DMA=y
 #
 # Virtio drivers
 #
-# CONFIG_VIRTIO_PCI is not set
+CONFIG_VIRTIO=y
+CONFIG_VIRTIO_BLK=y
+CONFIG_VIRTIO_PCI=y
 # CONFIG_VIRTIO_MMIO is not set
 
 #
