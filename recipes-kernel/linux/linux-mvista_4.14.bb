@@ -4,7 +4,8 @@ MV_KERNELCACHE_BRANCH ?= "yocto-4.14"
 MV_KERNELCACHE_TREE ?= "git://github.com/MontaVista-OpenSourceTechnology/yocto-kernel-cache;protocol=https"
 
 require recipes-kernel/linux/linux-yocto.inc
-
+NO_SOURCE_MIRROR="1"
+BB_GENERATE_MIRROR_TARBALLS = "0"
 SRCREV_machine ?= "${MV_KERNEL_BRANCH}"
 SRCREV_meta ?= "${MV_KERNELCACHE_BRANCH}"
 
