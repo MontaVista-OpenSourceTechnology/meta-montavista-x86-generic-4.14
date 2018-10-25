@@ -1,0 +1,100 @@
+Overview:
+The OpenEmbedded Image Creator (Wic) command generates partitioned images from 
+existing OpenEmbedded build artifacts. Image generation is driven by 
+partitioning commands contained in an Openembedded kickstart file (.wks) 
+specified either directly on the command line or as one of a selection of 
+canned kickstart files.
+
+Steps to generate bootable partitioned image in OpenCGX using wic
+-----------------------------------------------------------------
+
+1. Add "wic" image type in IMAGE_FSTYPES variable either in local.conf
+   or in machine config file.
+   i.e
+   IMAGE_FSTYPES_append += "wic"
+
+2. Create a kickstart file (.wks) in the BSP layer, at location 
+   <BSP_layer>/wic/. The .wks file contains information about basic 
+   partitioning commands such as partition (or part for short) and bootloader.
+   Based on these commands, the final image gets partitioned.
+   Ex: $ ls <BSP_layer>/wic/
+   genericx86-mv.wks 
+ 
+3. Specify the kickstart file (.wks) via WKS_FILE variable in local.conf or in 
+   machine config file.
+   i.e
+   WKS_FILE ?= "genericx86-mv.wks"
+
+4. Build the required rootfs image using bitbake.
+   Ex: $ bitbake core-image-minimal
+
+5. Build the several native tools, which are required to create partitoned image
+   using wic tool.
+   Ex: $ bitbake parted-native dosfstools-native mtools-native
+
+6. Create partitioned image using wic tool, either in raw mode or cooked mode.
+
+   A: Using Raw mode
+
+   $ wic create wks_file -o OUTDIR --rootfs-dir ROOTFS_DIR --bootimg-dir BOOTIMG_DIR --kernel-dir KERNEL_DIR --native-sysroot NATIVE_SYSROOT
+
+where:
+
+wks_file:
+        An OpenEmbedded kickstart file.  You can provide
+        your own custom file or use a file from a set of
+        existing files as described by further options.
+
+-o OUTDIR, --outdir OUTDIR
+                         name of directory to create image in
+-r ROOTFS_DIR, --rootfs-dir ROOTFS_DIR
+                         path to the /rootfs dir to use as the .wks rootfs
+                         source
+-b BOOTIMG_DIR, --bootimg-dir BOOTIMG_DIR
+                         path to the dir containing the boot artifacts (e.g.
+                         /EFI or /syslinux dirs) to use as the .wks bootimg
+                         source
+-k KERNEL_DIR, --kernel-dir KERNEL_DIR
+                         path to the dir containing the kernel to use in the
+                         .wks bootimg
+-n NATIVE_SYSROOT, --native-sysroot NATIVE_SYSROOT
+                         path to the native sysroot containing the tools to use
+                         to build the image
+
+Ex: $ wic create /opt/work_jagadeesh/x86-generic-64-4.14-2.4-cgx/layers/meta-x86-generic-4.14/wic/genericx86-mv.wks  \
+         -o $PWD/output --rootfs-dir /opt/work_jagadeesh/x86-generic-64-4.14-2.4-cgx/project/tmp/work/x86_generic_64-montavista-linux/core-image-minimal/1.0-r0/rootfs/ \
+         --bootimg-dir /opt/work_jagadeesh/x86-generic-64-4.14-2.4-cgx/project/tmp/work/x86_generic_64-montavista-linux/core-image-minimal/1.0-r0/recipe-sysroot/usr/share/ \
+         --kernel-dir /opt/work_jagadeesh/x86-generic-64-4.14-2.4-cgx/project/tmp/deploy/images/x86-generic-64/ \
+         --native-sysroot /opt/work_jagadeesh/x86-generic-64-4.14-2.4-cgx/project/tmp/work/corei7-64-montavista-linux/wic-tools/1.0-r0/recipe-sysroot-native/
+
+   
+   B: Using Cooked mode
+      $ wic create wks_file -e IMAGE_NAME
+
+where:
+wks_file:
+        An OpenEmbedded kickstart file.  You can provide
+        your own custom file or use a file from a set of
+        existing files as described by further options.
+
+-e IMAGE_NAME, --image-name IMAGE_NAME
+                         name of the image to use the artifacts from 
+                         e.g. core-image-sato
+
+
+      Ex: $ wic create genericx86-mv -e core-image-minimal
+
+
+7. Flash the generated partitioned image into hard disk (HDD) or SD card, using
+   dd or bmaptool.
+
+   $ sudo dd if=<partitioned_image> of=<target_disk/card>
+
+   Ex: sudo dd if=output/genericx86-mv-201810250715-sda.direct of=/dev/sda
+
+   Note:
+   To use bmaptool refer,
+   https://www.yoctoproject.org/docs/2.4/dev-manual/dev-manual.html#flashing-images-using-bmaptool
+
+More details regarding wic can be found at
+   https://www.yoctoproject.org/docs/2.4/dev-manual/dev-manual.html#creating-partitioned-images-using-wic
